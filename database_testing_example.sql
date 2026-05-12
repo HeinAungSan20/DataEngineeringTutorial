@@ -1,0 +1,91 @@
+CREATE DATABASE IF NOT EXISTS BankDB; 
+USE BankDB;
+
+CREATE TABLE Customer ( 
+
+    CustomerID INT PRIMARY KEY, 
+
+    FirstName VARCHAR(50) NOT NULL, 
+
+    LastName VARCHAR(50) NOT NULL, 
+
+    Email VARCHAR(100) NOT NULL UNIQUE 
+
+); 
+
+CREATE TABLE Account ( 
+
+    AccountID INT PRIMARY KEY, 
+
+    CustomerID INT NOT NULL, 
+
+    AccountType VARCHAR(30) NOT NULL, 
+
+    Balance DECIMAL(12, 2) DEFAULT 0.00, 
+
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID) 
+
+); 
+
+CREATE TABLE TransactionHistory ( 
+
+    TransactionID INT PRIMARY KEY, 
+
+    AccountID INT NOT NULL, 
+
+    Amount DECIMAL(10,2), 
+
+    TransactionDate DATE, 
+
+    FOREIGN KEY (AccountID) REFERENCES Account(AccountID) 
+    );
+    
+SELECT SCHEMA_NAME 
+FROM INFORMATION_SCHEMA.SCHEMATA 
+WHERE SCHEMA_NAME = 'BankDB'; 
+
+SELECT TABLE_NAME 
+FROM INFORMATION_SCHEMA.TABLES 
+WHERE TABLE_SCHEMA = 'BankDB'; 
+
+SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_KEY 
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = 'Customer' 
+AND TABLE_SCHEMA = 'BankDB'; 
+
+SELECT t.CONSTRAINT_NAME, k.COLUMN_NAME 
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS t 
+JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE k 
+ON t.CONSTRAINT_NAME = k.CONSTRAINT_NAME 
+WHERE t.CONSTRAINT_TYPE = 'PRIMARY KEY' 
+AND t.TABLE_SCHEMA = 'BankDB'; 
+
+SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME 
+FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
+WHERE TABLE_SCHEMA = 'BankDB' AND REFERENCED_TABLE_NAME IS NOT NULL; 
+
+SHOW INDEX FROM Customer; 
+
+INSERT INTO Customer (CustomerID, FirstName, LastName, Email) 
+VALUES  
+(1, 'Alice', 'Wong', 'alice.wong@bank.com'), 
+(2, 'Bob', 'Smith', 'bob.smith@bank.com'); 
+
+INSERT INTO Customer (CustomerID, FirstName, LastName, Email) 
+VALUES (3, 'Charlie', 'Brown', 'alice.wong@bank.com'); 
+
+INSERT INTO Account (AccountID, CustomerID, AccountType, Balance) 
+VALUES  
+(101, 1, 'Savings', 5000.00), 
+(102, 2, 'Checking', 1200.50); 
+
+INSERT INTO TransactionHistory (TransactionID, AccountID, Amount, TransactionDate) 
+VALUES  
+(1001, 101, 150.00, '2025-04-01'), 
+(1002, 101, -50.00, '2025-04-03'); 
+
+INSERT INTO Account (AccountID, CustomerID, AccountType, Balance) 
+VALUES (103, 999, 'Fixed Deposit', 2000.00); 
+
+ 
+    
